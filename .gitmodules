@@ -4,3 +4,6 @@
 [submodule "ibex"]
 	path = ibex
 	url = https://github.com/lowRISC/ibex/
+[submodule "edalize"]
+	path = edalize
+	url = https://github.com/SymbiFlow/edalize
