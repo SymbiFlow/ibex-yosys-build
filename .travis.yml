@@ -28,4 +28,4 @@ script:
         - export PRIM_ASSERT_FILE_PATH=$(find ${IBEX_BUILD_DIR} -name "prim_assert.sv")
         - export PRIM_ASSERT_DIR=$(dirname ${PRIM_ASSERT_FILE_PATH})
         - export SRAM_INIT_FILE_PATH=$(find ibex -name "led.vmem")
-        - PYTHONPATH=${PWD}/edalize python3 yosys-sv2v-yosys-vivado.py
+        - PYTHONPATH=${PWD}/edalize python3 yosys-sv2v-yosys-vivado.py | grep -v "is used but has no driver"
