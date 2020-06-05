@@ -5,14 +5,10 @@ import os
 import glob
 import subprocess
 
-work_root = 'yosys-sv2v-yosys-vivado-build'
-post_imp_file = os.path.realpath(os.path.join(work_root, 'post.tcl'))
+work_root = 'yosys-sv2v-yosys-build'
 os.makedirs(work_root, exist_ok=True)
 
 srcs = glob.glob("./ibex/build/**/*.sv", recursive=True)
-
-with open(post_imp_file, 'w') as f:
-    f.write('write_checkpoint -force design.dcp')
 
 files = [
     {'name': os.path.realpath('./ibex/build/lowrisc_ibex_top_artya7_0.1/src/lowrisc_ibex_top_artya7_0.1/data/pins_artya7.xdc'), 'file_type': 'xdc'},
