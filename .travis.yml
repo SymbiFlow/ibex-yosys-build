@@ -13,7 +13,6 @@ install:
         - wget https://raw.githubusercontent.com/lowRISC/opentitan/master/util/get-toolchain.py # Lowrisc RISCV toolchain
         - python3 get-toolchain.py -t /home/travis/tools/riscv
         - export PATH="$PATH:/home/travis/tools/riscv/bin"
-        - wget -q https://raw.githubusercontent.com/antmicro/sv-parser-test-workspace/ibex-yosys/ibex.patch
         - cd ibex && git apply ../ibex.patch && make sw-led && fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part xc7a35ticsg324-1L && cd ..
 
         - wget https://github.com/zachjs/sv2v/releases/download/v0.0.3/sv2v-Linux.zip
