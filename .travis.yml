@@ -18,13 +18,9 @@ install:
         - wget https://github.com/zachjs/sv2v/releases/download/v0.0.3/sv2v-Linux.zip
         - unzip sv2v-Linux.zip
         - export PATH="${PATH}:${PWD}/sv2v-Linux"
-
 script:
         - cd yosys && sudo make install -j40 && cd ..
         - export ROOT_DIR=${PWD}
         - export IBEX_BUILD_DIR="${ROOT_DIR}/ibex/build"
 
-        - export PRIM_ASSERT_FILE_PATH=$(find ${IBEX_BUILD_DIR} -name "prim_assert.sv")
-        - export PRIM_ASSERT_DIR=$(dirname ${PRIM_ASSERT_FILE_PATH})
-        - export SRAM_INIT_FILE_PATH=$(find ibex -name "led.vmem")
         - PYTHONPATH=${PWD}/edalize python3 yosys-sv2v-yosys.py

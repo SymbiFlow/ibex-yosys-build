@@ -35,8 +35,7 @@ for src in srcs:
       files.append({'name': os.path.realpath(src), 'file_type': 'systemVerilogSource'})
 
 
-SRAM_INIT_FILE_PATH = os.getenv('SRAM_INIT_FILE_PATH')
-cmd = ["sv2v", f"--define=SRAM_INIT_FILE={SRAM_INIT_FILE_PATH}", f"--incdir={PRIM_ASSERT_DIR}"]
+cmd = ["sv2v", f"--incdir={PRIM_ASSERT_DIR}"]
 for sv2v_file in sv2v_files:
     cmd.append(sv2v_file)
 with open("ibex.v", "w") as f:
