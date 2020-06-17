@@ -1,6 +1,6 @@
 # ibex-yosys-build
 [![Build Status](https://travis-ci.com/antmicro/ibex-yosys-build.svg?branch=master)](https://travis-ci.com/antmicro/ibex-yosys-build)
-This repository contains scripts to build ibex for Arty A7 using yosys.
+This repository contains scripts to synthesize Ibex CPU for Arty A7 board using yosys.
 # Getting started
 ## Clone repository
 ```
