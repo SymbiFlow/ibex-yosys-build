@@ -17,7 +17,7 @@ files = [
     {'name': os.path.realpath('./ibex.v'), 'file_type': 'verilogSource'}
 ]
 
-skip_files = ["ibex_icache.sv", "ibex_fetch_fifo.sv", "ibex_core.sv", "ibex_pmp.sv"]
+skip_files = ["ibex_core.sv", "ibex_pmp.sv"]
 
 sv2v_files = []
 
