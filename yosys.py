@@ -5,7 +5,7 @@ import os
 import glob
 import subprocess
 
-work_root = 'yosys-sv2v-yosys-build'
+work_root = 'yosys-build'
 os.makedirs(work_root, exist_ok=True)
 
 srcs = glob.glob("./ibex/build/**/*.sv", recursive=True)
@@ -14,34 +14,18 @@ SRAM_INIT_FILE_PATH = f"{os.path.abspath(os.getcwd())}/{sram_init[0]}"
 
 files = [
     {'name': os.path.realpath('./ibex/build/lowrisc_ibex_top_artya7_0.1/src/lowrisc_ibex_top_artya7_0.1/data/pins_artya7.xdc'), 'file_type': 'xdc'},
-    {'name': os.path.realpath('./ibex.v'), 'file_type': 'verilogSource'}
 ]
-
-skip_files = ["ibex_pmp.sv"]
-
-sv2v_files = []
 
 PRIM_ASSERT_DIR = ""
 for src in srcs:
     basename = os.path.basename(src)
-    if basename in skip_files:
-        sv2v_files.append(src)
-        continue
     if basename == "prim_assert.sv":
       files.append({'name': os.path.realpath(src), 'file_type': 'systemVerilogSource', 'is_include_file': 'true'})
       PRIM_ASSERT_DIR = os.path.dirname(src)
     elif basename == "ibex_pkg.sv":
       files.insert(0, {'name': os.path.realpath(src), 'file_type': 'systemVerilogSource'})
-      sv2v_files.append(src)
     else:
       files.append({'name': os.path.realpath(src), 'file_type': 'systemVerilogSource'})
-
-
-cmd = ["sv2v", f"--define=SRAM_INIT_FILE={SRAM_INIT_FILE_PATH}", f"--incdir={PRIM_ASSERT_DIR}"]
-for sv2v_file in sv2v_files:
-    cmd.append(sv2v_file)
-with open("ibex.v", "w") as f:
-    subprocess.call(cmd, stdout=f)
 
 parameters = {
     'SRAM_INIT_FILE':
@@ -71,6 +55,3 @@ backend.build()
 print("Files used to generate:")
 for f in files:
     print(f['name'])
-print("Files used to generate sv2v.v:")
-for f in sv2v_files:
-    print(f)

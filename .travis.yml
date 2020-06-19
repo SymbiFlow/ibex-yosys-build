@@ -14,13 +14,9 @@ install:
         - python3 get-toolchain.py -t /home/travis/tools/riscv
         - export PATH="$PATH:/home/travis/tools/riscv/bin"
         - cd ibex && git apply ../ibex.patch && make sw-led && fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part xc7a35ticsg324-1L && cd ..
-
-        - wget https://github.com/zachjs/sv2v/releases/download/v0.0.3/sv2v-Linux.zip
-        - unzip sv2v-Linux.zip
-        - export PATH="${PATH}:${PWD}/sv2v-Linux"
 script:
         - cd yosys && sudo make install -j40 && cd ..
         - export ROOT_DIR=${PWD}
         - export IBEX_BUILD_DIR="${ROOT_DIR}/ibex/build"
 
-        - PYTHONPATH=${PWD}/edalize python3 yosys-sv2v-yosys.py
+        - PYTHONPATH=${PWD}/edalize python3 yosys.py
