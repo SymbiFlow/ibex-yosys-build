@@ -8,7 +8,7 @@ import subprocess
 work_root = 'yosys-build'
 os.makedirs(work_root, exist_ok=True)
 
-srcs = glob.glob("./ibex/build/**/*.sv", recursive=True)
+srcs = glob.glob("./ibex/build/lowrisc_ibex_top_artya7_0.1/src/**/*.sv", recursive=True)
 sram_init = glob.glob("./ibex/**/led.vmem", recursive=True)
 SRAM_INIT_FILE_PATH = f"{os.path.abspath(os.getcwd())}/{sram_init[0]}"
 
