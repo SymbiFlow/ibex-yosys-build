@@ -14,7 +14,7 @@ install:
         - wget https://raw.githubusercontent.com/lowRISC/opentitan/master/util/get-toolchain.py # Lowrisc RISCV toolchain
         - python3 get-toolchain.py -t /home/travis/tools/riscv
         - export PATH="$PATH:/home/travis/tools/riscv/bin"
-        - cd ibex && git apply ../ibex.patch && make sw-led && python3 -m fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part xc7a35ticsg324-1L && cd ..
+        - cd ibex && git apply ../ibex.patch && make sw-led && fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part xc7a35ticsg324-1L && cd ..
 script:
         - cd yosys && sudo make install -j40 && cd ..
         - export ROOT_DIR=${PWD}
