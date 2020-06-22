@@ -1,8 +1,17 @@
 diff --git a/ibex_core.core b/ibex_core.core
-index fb9eca5..bda0468 100644
+index 0c45f59..bccc4c1 100644
 --- a/ibex_core.core
 +++ b/ibex_core.core
-@@ -31,8 +31,8 @@ filesets:
+@@ -11,7 +11,7 @@ filesets:
+       - lowrisc:prim:assert
+       # TODO: Only lfsr is needed. Replace with a more specific dependency
+       # once available.
+-      - lowrisc:prim:all
++      #- lowrisc:prim:all
+       - lowrisc:ibex:ibex_pkg
+       - lowrisc:ibex:ibex_icache
+     files:
+@@ -35,8 +35,8 @@ filesets:
        # XXX: Figure out the best way to switch these two implementations
        # dynamically on the target.
  #      - rtl/ibex_register_file_latch.sv # ASIC
@@ -13,3 +22,25 @@ index fb9eca5..bda0468 100644
        - rtl/ibex_core.sv
      file_type: systemVerilogSource
  
+diff --git a/vendor/lowrisc_ip/prim/rtl/prim_util_memload.sv b/vendor/lowrisc_ip/prim/rtl/prim_util_memload.sv
+index 4392f0a..e3972b9 100644
+--- a/vendor/lowrisc_ip/prim/rtl/prim_util_memload.sv
++++ b/vendor/lowrisc_ip/prim/rtl/prim_util_memload.sv
+@@ -46,9 +46,16 @@
+   endfunction
+ `endif
+ 
++`ifdef SRAM_INIT_FILE
++localparam MEM_FILE = `PRIM_STRINGIFY(`SRAM_INIT_FILE);
++initial begin
++  $display("Initializing SRAM from %s", MEM_FILE);
++  $readmemh(MEM_FILE, mem);
++end
++`else
+ initial begin
+   if (MemInitFile != "") begin : gen_meminit
+       $display("Initializing memory %m from file '%s'.", MemInitFile);
+       $readmemh(MemInitFile, mem);
+   end
+-end
++`endif
