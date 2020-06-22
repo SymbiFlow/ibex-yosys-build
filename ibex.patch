@@ -22,25 +22,16 @@ index 0c45f59..bccc4c1 100644
        - rtl/ibex_core.sv
      file_type: systemVerilogSource
  
-diff --git a/vendor/lowrisc_ip/prim/rtl/prim_util_memload.sv b/vendor/lowrisc_ip/prim/rtl/prim_util_memload.sv
-index 4392f0a..e3972b9 100644
---- a/vendor/lowrisc_ip/prim/rtl/prim_util_memload.sv
-+++ b/vendor/lowrisc_ip/prim/rtl/prim_util_memload.sv
-@@ -46,9 +46,16 @@
-   endfunction
- `endif
+diff --git a/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv b/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
+index 867a72d..1c24938 100644
+--- a/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
++++ b/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
+@@ -10,7 +10,7 @@ module prim_generic_ram_1p #(
+   parameter  int Width           = 32, // bit
+   parameter  int Depth           = 128,
+   parameter  int DataBitsPerMask = 1, // Number of data bits per bit of write mask
+-  parameter      MemInitFile     = "", // VMEM file to initialize the memory with
++  parameter      MemInitFile     = `PRIM_STRINGIFY(`SRAM_INIT_FILE), // VMEM file to initialize the memory with
  
-+`ifdef SRAM_INIT_FILE
-+localparam MEM_FILE = `PRIM_STRINGIFY(`SRAM_INIT_FILE);
-+initial begin
-+  $display("Initializing SRAM from %s", MEM_FILE);
-+  $readmemh(MEM_FILE, mem);
-+end
-+`else
- initial begin
-   if (MemInitFile != "") begin : gen_meminit
-       $display("Initializing memory %m from file '%s'.", MemInitFile);
-       $readmemh(MemInitFile, mem);
-   end
--end
-+`endif
+   localparam int Aw              = $clog2(Depth)  // derived parameter
+ ) (
