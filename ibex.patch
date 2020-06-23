@@ -11,17 +11,6 @@ index 0c45f59..bccc4c1 100644
        - lowrisc:ibex:ibex_pkg
        - lowrisc:ibex:ibex_icache
      files:
-@@ -35,8 +35,8 @@ filesets:
-       # XXX: Figure out the best way to switch these two implementations
-       # dynamically on the target.
- #      - rtl/ibex_register_file_latch.sv # ASIC
--#      - rtl/ibex_register_file_fpga.sv # FPGA
--      - rtl/ibex_register_file_ff.sv # generic FF-based
-+      - rtl/ibex_register_file_fpga.sv # FPGA
-+#      - rtl/ibex_register_file_ff.sv # generic FF-based
-       - rtl/ibex_core.sv
-     file_type: systemVerilogSource
- 
 diff --git a/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv b/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
 index 867a72d..1c24938 100644
 --- a/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
