@@ -64,11 +64,12 @@ for src in xdc:
 for define in defines:
     for key in define:
         if not define[key].isnumeric():
-            resolved = Path(f'{tcl_dir}/{define[key]}').resolve()
+            resolved = Path(define[key]).resolve()
+            ibex_resolved = Path('ibex').resolve()
             parameters[key] = {
                     'paramtype': 'vlogdefine',
                     'datatype': 'str',
-                    'default': str(resolved),
+                    'default': str(ibex_resolved) + str(resolved),
                 }
         else:
             parameters[key] = {
