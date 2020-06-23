@@ -3,7 +3,6 @@
 import edalize
 import os
 import glob
-import subprocess
 import re
 
 dirs_re = r'.*\[list (.*)\] .*'
