@@ -1,8 +1,17 @@
 diff --git a/ibex_core.core b/ibex_core.core
-index fb9eca5..bda0468 100644
+index 0c45f59..bccc4c1 100644
 --- a/ibex_core.core
 +++ b/ibex_core.core
-@@ -31,8 +31,8 @@ filesets:
+@@ -11,7 +11,7 @@ filesets:
+       - lowrisc:prim:assert
+       # TODO: Only lfsr is needed. Replace with a more specific dependency
+       # once available.
+-      - lowrisc:prim:all
++      #- lowrisc:prim:all
+       - lowrisc:ibex:ibex_pkg
+       - lowrisc:ibex:ibex_icache
+     files:
+@@ -35,8 +35,8 @@ filesets:
        # XXX: Figure out the best way to switch these two implementations
        # dynamically on the target.
  #      - rtl/ibex_register_file_latch.sv # ASIC
@@ -13,3 +22,16 @@ index fb9eca5..bda0468 100644
        - rtl/ibex_core.sv
      file_type: systemVerilogSource
  
+diff --git a/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv b/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
+index 867a72d..1c24938 100644
+--- a/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
++++ b/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
+@@ -10,7 +10,7 @@ module prim_generic_ram_1p #(
+   parameter  int Width           = 32, // bit
+   parameter  int Depth           = 128,
+   parameter  int DataBitsPerMask = 1, // Number of data bits per bit of write mask
+-  parameter      MemInitFile     = "", // VMEM file to initialize the memory with
++  parameter      MemInitFile     = `PRIM_STRINGIFY(`SRAM_INIT_FILE), // VMEM file to initialize the memory with
+ 
+   localparam int Aw              = $clog2(Depth)  // derived parameter
+ ) (
