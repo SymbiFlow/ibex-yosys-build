@@ -4,20 +4,29 @@ import edalize
 import os
 import glob
 import re
+from pathlib import Path
 
 dirs_re = r'.*\[list (.*)\] .*'
 work_root = 'yosys-build'
 os.makedirs(work_root, exist_ok=True)
+ibex_build_dir = './ibex/build/lowrisc_ibex_top_artya7_0.1'
+tcl_dir = ibex_build_dir + '/synth-vivado'
 
 packages = []
 sources = []
 include_srcs = []
-with open('./ibex/build/lowrisc_ibex_top_artya7_0.1/synth-vivado/lowrisc_ibex_top_artya7_0.1.tcl') as fp:
+xdc = []
+defines = []
+
+files = []
+parameters = {}
+
+with open(f'{tcl_dir}/lowrisc_ibex_top_artya7_0.1.tcl') as fp:
   for l in fp:
     if l.startswith('read_verilog'):
       filepath = l.split()[-1]
       filepath = filepath.strip('..')
-      filepath = './ibex/build/lowrisc_ibex_top_artya7_0.1' + filepath
+      filepath = ibex_build_dir + filepath
       if filepath.endswith('_pkg.sv'):
         packages.append(filepath)
       else:
@@ -28,15 +37,19 @@ with open('./ibex/build/lowrisc_ibex_top_artya7_0.1/synth-vivado/lowrisc_ibex_to
         dirs = dirs.groups()[0].split()
         for dir in dirs:
           dir = dir.strip('..')
-          dir = ('./ibex/build/lowrisc_ibex_top_artya7_0.1' + dir)
+          dir = ibex_build_dir + dir
           include_srcs.extend(glob.glob(dir+'/*.sv', recursive=False))
-
-sram_init = glob.glob("./ibex/**/led.vmem", recursive=True)
-SRAM_INIT_FILE_PATH = f"{os.path.abspath(os.getcwd())}/{sram_init[0]}"
-
-files = [
-    {'name': os.path.realpath('./ibex/build/lowrisc_ibex_top_artya7_0.1/src/lowrisc_ibex_top_artya7_0.1/data/pins_artya7.xdc'), 'file_type': 'xdc'},
-]
+    if l.startswith('read_xdc'):
+        filepath = l.split()[-1]
+        filepath = filepath.strip('..')
+        filepath = ibex_build_dir + filepath
+        xdc.append(filepath)
+    if l.startswith('set_property verilog_define'):
+        defines_list = l[l.find('{') + 1:l.rfind('}')]
+        for define in defines_list.split():
+            key = define.split('=')[0]
+            value = define.split('=')[1]
+            defines.append({key: value})
 
 # ensure packages are first in the list
 for src in packages:
@@ -45,16 +58,25 @@ for src in sources:
   files.append({'name': os.path.realpath(src), 'file_type': 'systemVerilogSource'})
 for src in include_srcs:
   files.append({'name': os.path.realpath(src), 'file_type': 'systemVerilogSource', 'is_include_file': 'true'})
+for src in xdc:
+  files.append({'name': os.path.realpath(src), 'file_type': 'xdc'})
 
+for define in defines:
+    for key in define:
+        if not define[key].isnumeric():
+            resolved = Path(f'{tcl_dir}/{define[key]}').resolve()
+            parameters[key] = {
+                    'paramtype': 'vlogdefine',
+                    'datatype': 'str',
+                    'default': str(resolved),
+                }
+        else:
+            parameters[key] = {
+                    'paramtype': 'vlogdefine',
+                    'datatype': 'int',
+                    'default': define[key],
+                }
 
-parameters = {
-    'SRAM_INIT_FILE':
-    {
-	     'paramtype': 'vlogdefine',
-	     'datatype': 'str',
-	     'default': SRAM_INIT_FILE_PATH,
-    }
-}
 tool = 'yosys'
 yosys_synth_options = ['-iopad', '-family xc7']
 incdirs = {}

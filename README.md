@@ -10,7 +10,7 @@ git clone --recursive https://github.com/antmicro/ibex-yosys-build
 This repository requires `fusesoc` and `Lowrisc RISCV toolchain`
 Install `fusesoc` using:
 ```
-pip install fusesoc
+pip install -r $(pwd)/ibex/python-requirements.txt
 ```
 download `Lowrisc RISCV toolchain` using (you can change the installation directory using `-t` flag):
 ```
