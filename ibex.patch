@@ -1,16 +1,16 @@
-diff --git a/ibex_core.core b/ibex_core.core
-index 0c45f59..bccc4c1 100644
---- a/ibex_core.core
-+++ b/ibex_core.core
-@@ -11,7 +11,7 @@ filesets:
-       - lowrisc:prim:assert
-       # TODO: Only lfsr is needed. Replace with a more specific dependency
-       # once available.
--      - lowrisc:prim:all
-+      #- lowrisc:prim:all
-       - lowrisc:ibex:ibex_pkg
-       - lowrisc:ibex:ibex_icache
-     files:
+diff --git a/vendor/lowrisc_ip/prim/prim.core b/vendor/lowrisc_ip/prim/prim.core
+index 9ab4f55..594e5ee 100644
+--- a/vendor/lowrisc_ip/prim/prim.core
++++ b/vendor/lowrisc_ip/prim/prim.core
+@@ -30,7 +30,7 @@ filesets:
+       - rtl/prim_fifo_sync.sv
+       - rtl/prim_flop_2sync.sv
+       - rtl/prim_sync_reqack.sv
+-      - rtl/prim_keccak.sv
++      #- rtl/prim_keccak.sv
+       - rtl/prim_lfsr.sv
+       - rtl/prim_packer.sv
+       - rtl/prim_cipher_pkg.sv
 diff --git a/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv b/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
 index 867a72d..1c24938 100644
 --- a/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
