@@ -87,7 +87,8 @@ edam = {
   'toplevel': 'top_artya7',
   'parameters': parameters,
   'tool_options' : {'yosys' : {
-    'yosys_synth_options' : yosys_synth_options
+    'yosys_synth_options' : yosys_synth_options,
+    'arch' : 'xilinx',
     }}
 }
 
