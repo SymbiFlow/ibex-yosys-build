@@ -1,0 +1,19 @@
+name: xc7
+channels:
+  - symbiflow
+dependencies:
+  - symbiflow::symbiflow-yosys
+  - symbiflow::symbiflow-yosys-plugins
+  - symbiflow::symbiflow-vtr
+  - symbiflow::prjxray-db
+  - symbiflow::prjxray-tools
+  - make
+  - lxml
+  - simplejson
+  - intervaltree
+  - git
+  - pip
+  # Packages installed from PyPI
+  - pip:
+    - -r file:requirements.txt
+
