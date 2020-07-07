@@ -11,16 +11,21 @@ index 9ab4f55..594e5ee 100644
        - rtl/prim_lfsr.sv
        - rtl/prim_packer.sv
        - rtl/prim_cipher_pkg.sv
-diff --git a/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv b/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
-index 867a72d..1c24938 100644
---- a/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
-+++ b/vendor/lowrisc_ip/prim_generic/rtl/prim_generic_ram_1p.sv
-@@ -10,7 +10,7 @@ module prim_generic_ram_1p #(
-   parameter  int Width           = 32, // bit
-   parameter  int Depth           = 128,
-   parameter  int DataBitsPerMask = 1, // Number of data bits per bit of write mask
--  parameter      MemInitFile     = "", // VMEM file to initialize the memory with
-+  parameter      MemInitFile     = `PRIM_STRINGIFY(`SRAM_INIT_FILE), // VMEM file to initialize the memory with
- 
-   localparam int Aw              = $clog2(Depth)  // derived parameter
- ) (
+diff --git a/shared/rtl/fpga/xilinx/clkgen_xil7series.sv b/shared/rtl/fpga/xilinx/clkgen_xil7series.sv
+index e41b4b0..83b5af2 100644
+--- a/shared/rtl/fpga/xilinx/clkgen_xil7series.sv
++++ b/shared/rtl/fpga/xilinx/clkgen_xil7series.sv
+@@ -27,10 +27,10 @@ module clkgen_xil7series (
+     .STARTUP_WAIT         ("FALSE"),
+     .DIVCLK_DIVIDE        (1),
+     .CLKFBOUT_MULT        (12),
+-    .CLKFBOUT_PHASE       (0.000),
++    .CLKFBOUT_PHASE       (0),
+     .CLKOUT0_DIVIDE       (24),
+-    .CLKOUT0_PHASE        (0.000),
+-    .CLKOUT0_DUTY_CYCLE   (0.500)
++    .CLKOUT0_PHASE        (0),
++    .CLKOUT0_DUTY_CYCLE   (50000)
+   ) pll (
+     .CLKFBOUT            (clk_fb_unbuf),
+     .CLKOUT0             (clk_50_unbuf),
