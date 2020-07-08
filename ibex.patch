@@ -1,16 +1,3 @@
-diff --git a/vendor/lowrisc_ip/prim/prim.core b/vendor/lowrisc_ip/prim/prim.core
-index 9ab4f55..594e5ee 100644
---- a/vendor/lowrisc_ip/prim/prim.core
-+++ b/vendor/lowrisc_ip/prim/prim.core
-@@ -30,7 +30,7 @@ filesets:
-       - rtl/prim_fifo_sync.sv
-       - rtl/prim_flop_2sync.sv
-       - rtl/prim_sync_reqack.sv
--      - rtl/prim_keccak.sv
-+      #- rtl/prim_keccak.sv
-       - rtl/prim_lfsr.sv
-       - rtl/prim_packer.sv
-       - rtl/prim_cipher_pkg.sv
 diff --git a/shared/rtl/fpga/xilinx/clkgen_xil7series.sv b/shared/rtl/fpga/xilinx/clkgen_xil7series.sv
 index e41b4b0..83b5af2 100644
 --- a/shared/rtl/fpga/xilinx/clkgen_xil7series.sv
@@ -29,3 +16,16 @@ index e41b4b0..83b5af2 100644
    ) pll (
      .CLKFBOUT            (clk_fb_unbuf),
      .CLKOUT0             (clk_50_unbuf),
+diff --git a/vendor/lowrisc_ip/prim/prim.core b/vendor/lowrisc_ip/prim/prim.core
+index 11027e4..452d726 100644
+--- a/vendor/lowrisc_ip/prim/prim.core
++++ b/vendor/lowrisc_ip/prim/prim.core
+@@ -31,7 +31,7 @@ filesets:
+       - rtl/prim_fifo_sync.sv
+       - rtl/prim_flop_2sync.sv
+       - rtl/prim_sync_reqack.sv
+-      - rtl/prim_keccak.sv
++      #- rtl/prim_keccak.sv
+       - rtl/prim_packer.sv
+       - rtl/prim_cipher_pkg.sv
+       - rtl/prim_present.sv
