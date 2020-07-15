@@ -12,7 +12,7 @@ SPLIT_INOUTS=`realpath ${MYPATH}/python/split_inouts.py`
 
 if [ -z ${XRAY_DATABASE_DIR} ]; then
 	echo "ERROR: XRAY_DATABASE_DIR variable is unset."
-	return 1
+	exit 1
 fi
 
 VERILOG_FILES=()

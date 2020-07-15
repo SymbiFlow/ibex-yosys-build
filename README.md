@@ -39,7 +39,7 @@ make patch/symbiflow
 ```
 Build yosys, symbiflow yosys plugins and install it in conda environment:
 ```
-cd yosys && make -j$(nproc) PREFIX=$INSTALL_DIR/conda/envs/xc7 && cd ..
+cd yosys && make -j$(nproc) && PREFIX=$INSTALL_DIR/conda/envs/xc7 make install && cd ..
 cd yosys-symbiflow-plugins && make -j$(nproc) install && cd ..
 ```
 
@@ -48,4 +48,3 @@ To generate bitstream run:
 ```
 make
 ```
-
