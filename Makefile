@@ -22,8 +22,8 @@ IBEX_SOURCES = \
                 sed 's@^..@${IBEX_BUILD}@')
 
 VERILOG := ${IBEX_SOURCES}
-PARTNAME := xc7a35tcsg324-1
-DEVICE  := xc7a50t_test
+PARTNAME := xc7a100tcsg324-1
+DEVICE  := xc7a100t_test
 BITSTREAM_DEVICE := artix7
 PCF := ${current_dir}/arty.pcf
 SDC := ${current_dir}/arty.sdc
