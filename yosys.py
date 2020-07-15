@@ -17,6 +17,7 @@ sources = []
 include_srcs = []
 xdc = []
 defines = []
+params = []
 
 files = []
 parameters = {}
@@ -50,6 +51,13 @@ with open(f'{tcl_dir}/lowrisc_ibex_top_artya7_0.1.tcl') as fp:
             key = define.split('=')[0]
             value = define.split('=')[1]
             defines.append({key: value})
+    if l.startswith('set_property generic'):
+        params_list = l[l.find('{') + 1:l.rfind('}')]
+        for param in params_list.split():
+            key = param.split('=')[0]
+            value = param.split('=')[1]
+            params.append({key: value})
+
 
 # ensure packages are first in the list
 for src in packages:
@@ -64,12 +72,10 @@ for src in xdc:
 for define in defines:
     for key in define:
         if not define[key].isnumeric():
-            resolved = Path(define[key]).resolve()
-            ibex_resolved = Path('ibex').resolve()
             parameters[key] = {
                     'paramtype': 'vlogdefine',
                     'datatype': 'str',
-                    'default': str(ibex_resolved) + str(resolved),
+                    'default': define[key],
                 }
         else:
             parameters[key] = {
@@ -77,6 +83,17 @@ for define in defines:
                     'datatype': 'int',
                     'default': define[key],
                 }
+
+for param in params:
+    for key in param:
+        resolved = Path(param[key]).resolve()
+        parameters[key] = {
+            'paramtype': 'vlogparam',
+            'datatype': 'str',
+            'default': str(resolved),
+        }
+
+
 
 tool = 'yosys'
 yosys_synth_options = ['-iopad', '-family xc7']

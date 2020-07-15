@@ -12,12 +12,10 @@ install:
         - pip3 install -r $(pwd)/ibex/python-requirements.txt
 
         - wget https://raw.githubusercontent.com/lowRISC/opentitan/master/util/get-toolchain.py # Lowrisc RISCV toolchain
-        - python3 get-toolchain.py -t /home/travis/tools/riscv
-        - export PATH="$PATH:/home/travis/tools/riscv/bin"
-        - cd ibex && git apply ../ibex.patch && make sw-led && fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part xc7a35ticsg324-1L && cd ..
+        - python3 get-toolchain.py -t $(pwd)/tools/riscv
+        - export PATH="$PATH:$(pwd)/tools/riscv/bin"
+        - cd ibex && make sw-led && fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part xc7a35ticsg324-1L --SRAMInitFile=$(pwd)/examples/sw/led/led.vmem && cd ..
 script:
         - cd yosys && sudo make install -j$(nproc) && cd ..
-        - export ROOT_DIR=${PWD}
-        - export IBEX_BUILD_DIR="${ROOT_DIR}/ibex/build"
 
         - python3 yosys.py
