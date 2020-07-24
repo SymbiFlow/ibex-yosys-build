@@ -1,0 +1,142 @@
+diff --git a/verilog/src/unisims/FDCE.v b/verilog/src/unisims/FDCE.v
+index 9d02932..825dc36 100644
+--- a/verilog/src/unisims/FDCE.v
++++ b/verilog/src/unisims/FDCE.v
+@@ -59,7 +59,7 @@ module FDCE #(
+     reg [0:0] IS_C_INVERTED_REG = IS_C_INVERTED;
+     reg [0:0] IS_D_INVERTED_REG = IS_D_INVERTED;
+     
+-    tri0 glblGSR = glbl.GSR;
++    tri0 glblGSR = '0;//glbl.GSR;
+ 
+ `ifdef XIL_TIMING
+     wire D_dly, C_dly, CE_dly;
+diff --git a/verilog/src/unisims/FDPE.v b/verilog/src/unisims/FDPE.v
+index 2597c6c..f177be4 100644
+--- a/verilog/src/unisims/FDPE.v
++++ b/verilog/src/unisims/FDPE.v
+@@ -59,7 +59,7 @@ module FDPE #(
+     reg [0:0] IS_D_INVERTED_REG = IS_D_INVERTED;
+     reg [0:0] IS_PRE_INVERTED_REG = IS_PRE_INVERTED;
+     
+-    tri0 glblGSR = glbl.GSR;
++    tri0 glblGSR = '0;//glbl.GSR;
+ 
+ `ifdef XIL_TIMING
+     wire D_dly, C_dly, CE_dly;
+diff --git a/verilog/src/unisims/FDRE.v b/verilog/src/unisims/FDRE.v
+index 6f3fb7f..4953787 100644
+--- a/verilog/src/unisims/FDRE.v
++++ b/verilog/src/unisims/FDRE.v
+@@ -58,7 +58,7 @@ module FDRE #(
+     reg [0:0] IS_D_INVERTED_REG = IS_D_INVERTED;
+     reg [0:0] IS_R_INVERTED_REG = IS_R_INVERTED;
+     
+-    tri0 glblGSR = glbl.GSR;
++    tri0 glblGSR = '0;//glbl.GSR;
+ 
+ `ifdef XIL_TIMING
+     wire D_dly, C_dly, CE_dly;
+diff --git a/verilog/src/unisims/OBUF.v b/verilog/src/unisims/OBUF.v
+index 3ab659b..0401d66 100644
+--- a/verilog/src/unisims/OBUF.v
++++ b/verilog/src/unisims/OBUF.v
+@@ -51,7 +51,7 @@ module OBUF (O, I);
+ 
+     input  I;
+ 
+-    tri0 GTS = glbl.GTS;
++    tri0 GTS = '0;//glbl.GTS;
+ 
+     bufif0 B1 (O, I, GTS);
+ 
+diff --git a/verilog/src/unisims/PLLE2_ADV.v b/verilog/src/unisims/PLLE2_ADV.v
+index c387706..16a8bc2 100644
+--- a/verilog/src/unisims/PLLE2_ADV.v
++++ b/verilog/src/unisims/PLLE2_ADV.v
+@@ -70,7 +70,7 @@ module PLLE2_ADV #(
+   parameter BANDWIDTH = "OPTIMIZED",
+   parameter integer CLKFBOUT_MULT = 5,
+   parameter real CLKFBOUT_PHASE = 0.000,
+-  parameter real CLKIN1_PERIOD = 0.000,
++  parameter real CLKIN1_PERIOD = 10.000,
+   parameter real CLKIN2_PERIOD = 0.000,
+   parameter integer CLKOUT0_DIVIDE = 1,
+   parameter real CLKOUT0_DUTY_CYCLE = 0.500,
+@@ -123,6 +123,8 @@ module PLLE2_ADV #(
+   input RST
+ );
+ 
++  localparam real CLKOUT0_DUTY_CYCLE_INTERNAL = CLKOUT0_DUTY_CYCLE / 100000;
++
+ `ifndef XIL_TIMING
+   localparam real CLKIN_FREQ_MAX = 1066.000;
+   localparam real CLKIN_FREQ_MIN = 19.000;
+@@ -170,7 +172,7 @@ module PLLE2_ADV #(
+   localparam real CLKOUT6_DUTY_CYCLE = 0.500;
+   localparam real CLKOUT6_PHASE = 0.000;
+ 
+-  tri0 GSR = glbl.GSR;
++  tri0 GSR = '0;//glbl.GSR;
+   tri1 p_up;
+   wire glock;
+ 
+@@ -750,12 +752,12 @@ module PLLE2_ADV #(
+         $display("Attribute Syntax Error : The Attribute CLKOUT0_PHASE on PLLE2_ADV instance %m is set to %f.  This attribute should be set to 0.0 when CLKOUT0_DIVIDE has fraction part.", CLKOUT0_PHASE);
+         #1 $finish;
+        end
+-    tmp_string = "CLKOUT0_DUTY_CYCLE";
++    tmp_string = "CLKOUT0_DUTY_CYCLE_INTERNAL";
+     if (clk0_frac_en == 0)
+-       chk_ok = para_real_range_chk(CLKOUT0_DUTY_CYCLE, tmp_string, 0.001, 0.999);
++       chk_ok = para_real_range_chk(CLKOUT0_DUTY_CYCLE_INTERNAL, tmp_string, 0.001, 0.999);
+     else
+-       if (CLKOUT0_DUTY_CYCLE != 0.5) begin
+-        $display("Attribute Syntax Error : The Attribute CLKOUT0_DUTY_CYCLE on PLLE2_ADV instance %m is set to %f.  This attribute should be set to 0.5 when CLKOUT0_DIVIDE has fraction part.", CLKOUT0_DUTY_CYCLE);
++       if (CLKOUT0_DUTY_CYCLE_INTERNAL != 0.5) begin
++        $display("Attribute Syntax Error : The Attribute CLKOUT0_DUTY_CYCLE_INTERNAL on PLLE2_ADV instance %m is set to %f.  This attribute should be set to 0.5 when CLKOUT0_DIVIDE has fraction part.", CLKOUT0_DUTY_CYCLE_INTERNAL);
+         #1 $finish;
+        end
+     tmp_string = "CLKOUT1_DIVIDE";
+@@ -1354,8 +1356,8 @@ module PLLE2_ADV #(
+       chk_ok = clkout_duty_chk (CLKOUT6_DIVIDE, CLKOUT6_DUTY_CYCLE, tmp_string);
+     end
+     if(clk0_frac_en == 0) begin
+-      tmp_string = "CLKOUT0_DUTY_CYCLE";
+-      chk_ok = clkout_duty_chk (CLKOUT0_DIVIDE, CLKOUT0_DUTY_CYCLE, tmp_string);
++      tmp_string = "CLKOUT0_DUTY_CYCLE_INTERNAL";
++      chk_ok = clkout_duty_chk (CLKOUT0_DIVIDE, CLKOUT0_DUTY_CYCLE_INTERNAL, tmp_string);
+       tmp_string = "CLKOUT5_DUTY_CYCLE";
+       chk_ok = clkout_duty_chk (CLKOUT5_DIVIDE, CLKOUT5_DUTY_CYCLE, tmp_string);
+     end
+@@ -1454,7 +1456,7 @@ module PLLE2_ADV #(
+     if (clk0_frac_en == 1) begin
+     end
+     else begin
+-      clk_out_para_cal (clk0_ht, clk0_lt, clk0_nocnt, clk0_edge, clk0_div_fint, CLKOUT0_DUTY_CYCLE);
++      clk_out_para_cal (clk0_ht, clk0_lt, clk0_nocnt, clk0_edge, clk0_div_fint, CLKOUT0_DUTY_CYCLE_INTERNAL);
+       clk_out_para_cal (clk5_ht, clk5_lt, clk5_nocnt, clk5_edge, CLKOUT5_DIVIDE, CLKOUT5_DUTY_CYCLE);
+     end
+     if (clkfb_frac_en == 1) begin
+@@ -1671,7 +1673,7 @@ module PLLE2_ADV #(
+   assign #1 clkinsel_tmp = clkinsel_in;
+ 
+   assign  glock = (startup_wait_sig) ? locked_out_tmp : 1;
+-  assign (weak1, strong0) glbl.PLL_LOCKG = (glock == 0) ? 0 : p_up;
++  //assign (weak1, strong0) glbl.PLL_LOCKG = (glock == 0) ? 0 : p_up;
+ 
+   initial begin
+     init_chk = 0;
+diff --git a/verilog/src/unisims/RAMB36E1.v b/verilog/src/unisims/RAMB36E1.v
+index c91f764..92c685a 100644
+--- a/verilog/src/unisims/RAMB36E1.v
++++ b/verilog/src/unisims/RAMB36E1.v
+@@ -303,7 +303,7 @@ module RAMB36E1 (CASCADEOUTA, CASCADEOUTB, DBITERR, DOADO, DOBDO, DOPADOP, DOPBD
+     input [3:0] WEA;
+     input [7:0] WEBWE;
+ 
+-    tri0 GSR = glbl.GSR;
++    tri0 GSR = '0;//glbl.GSR;
+ 
+     wire [3:0] dangle_out4;
+     wire [31:0] dangle_out32;
