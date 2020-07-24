@@ -22,8 +22,8 @@ IBEX_SOURCES = \
                 sed 's@^..@${IBEX_BUILD}@')
 
 VERILOG := ${IBEX_SOURCES}
-PARTNAME := xc7a100tcsg324-1
-DEVICE  := xc7a100t_test
+PARTNAME := xc7a200tsbg484-1
+DEVICE  := xc7a200t_test
 BITSTREAM_DEVICE := artix7
 PCF := ${current_dir}/arty.pcf
 SDC := ${current_dir}/arty.sdc
@@ -36,29 +36,28 @@ ibex/configure:
 	cp prim_generic_clock_gating.sv ibex/build/lowrisc_ibex_top_artya7_0.1/src/lowrisc_prim_generic_clock_gating_0/rtl/prim_generic_clock_gating.sv
 
 patch/symbiflow:
-	cp synth /opt/symbiflow/xc7/install/bin/synth
-	cp synth.tcl /opt/symbiflow/xc7/install/share/symbiflow/scripts/xc7/synth.tcl
+	cp symbiflow_synth /opt/symbiflow/xc7/install/bin/symbiflow_synth
 
 ${BUILDDIR}:
-	mkdir ${BUILDDIR}
+	mkdir ${BUILDDIR} | echo "Build dir exists"
 
 ${BUILDDIR}/${TOP}.eblif: | ${BUILDDIR}
-	cd ${BUILDDIR} && synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} -p ${PARTNAME} -i ${IBEX_INCLUDE} -x ${XDC} -l ${current_dir}/ibex/examples/sw/led/led.vmem > /dev/null
+	cd ${BUILDDIR} && symbiflow_synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} -p ${PARTNAME} -i ${IBEX_INCLUDE} -x ${XDC} -l ${current_dir}/ibex/examples/sw/led/led.vmem > /dev/null
 
 ${BUILDDIR}/${TOP}.net: ${BUILDDIR}/${TOP}.eblif
-	cd ${BUILDDIR} && pack -e ${TOP}.eblif -d ${DEVICE} -s ${SDC} > /dev/null
+	cd ${BUILDDIR} && symbiflow_pack -e ${TOP}.eblif -d ${DEVICE} -s ${SDC} > /dev/null
 
 ${BUILDDIR}/${TOP}.place: ${BUILDDIR}/${TOP}.net
-	cd ${BUILDDIR} && place -e ${TOP}.eblif -d ${DEVICE} -p ${PCF} -n ${TOP}.net -P ${PARTNAME} -s ${SDC} > /dev/null
+	cd ${BUILDDIR} && symbiflow_place -e ${TOP}.eblif -d ${DEVICE} -p ${PCF} -n ${TOP}.net -P ${PARTNAME} -s ${SDC} > /dev/null
 
 ${BUILDDIR}/${TOP}.route: ${BUILDDIR}/${TOP}.place
-	cd ${BUILDDIR} && route -e ${TOP}.eblif -d ${DEVICE} -s ${SDC} > /dev/null
+	cd ${BUILDDIR} && symbiflow_route -e ${TOP}.eblif -d ${DEVICE} -s ${SDC} > /dev/null
 
 ${BUILDDIR}/${TOP}.fasm: ${BUILDDIR}/${TOP}.route
-	cd ${BUILDDIR} && write_fasm -e ${TOP}.eblif -d ${DEVICE} > /dev/null
+	cd ${BUILDDIR} && symbiflow_write_fasm -e ${TOP}.eblif -d ${DEVICE} > /dev/null
 
 ${BUILDDIR}/${TOP}.bit: ${BUILDDIR}/${TOP}.fasm
-	cd ${BUILDDIR} && write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm -p ${PARTNAME} -b ${TOP}.bit
+	cd ${BUILDDIR} && symbiflow_write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm -p ${PARTNAME} -b ${TOP}.bit > /dev/null
 
 clean:
 	rm -rf ${BUILDDIR}

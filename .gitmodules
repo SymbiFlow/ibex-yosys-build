@@ -8,6 +8,3 @@
 [submodule "yosys-symbiflow-plugins"]
 	path = yosys-symbiflow-plugins
 	url = https://github.com/SymbiFlow/yosys-symbiflow-plugins
-[submodule "prjxray"]
-	path = prjxray
-	url = https://github.com/SymbiFlow/prjxray

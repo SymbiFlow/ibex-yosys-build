@@ -1,13 +1,13 @@
 os: linux
 dist: bionic
-language: c++
+language: nix
 
 before_install:
         - export DEBIAN_FRONTEND=noninteractive
 
 install:
         - sudo apt-get update
-        - sudo apt-get install git build-essential srecord unzip wget tree python3-pip python3-setuptools python3-wheel clang bison flex libreadline-dev gawk tcl-dev libffi-dev git graphviz xdot pkg-config python3 libboost-system-dev libboost-python-dev libboost-filesystem-dev zlib1g-dev
+        - sudo apt-get install git build-essential srecord unzip wget tree python3-pip python3-setuptools python3-wheel clang bison flex libreadline-dev gawk tcl-dev libffi-dev git graphviz xdot pkg-config python3 libboost-system-dev libboost-python-dev libboost-filesystem-dev zlib1g-dev curl xz-utils
 
         - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O conda_installer.sh
         - export INSTALL_DIR="/opt/symbiflow/xc7"
@@ -16,7 +16,13 @@ install:
         - conda env create -f environment.yml
         - conda activate xc7
 
-        - wget -qO- https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/continuous/install/27/20200630-100111/symbiflow-arch-defs-install-30f7325f.tar.xz | tar -xJ -C $INSTALL_DIR
+        - travis_wait ./narball.sh 6zj0j9vn5zf8nzfl2vbfcsfymi58ajnv-symbiflow
+        - mkdir -p $INSTALL_DIR/install
+        - tar -xvf 6zj0j9vn5zf8nzfl2vbfcsfymi58ajnv-symbiflow.tar.gz -C $INSTALL_DIR/install --strip 1
+        - find $INSTALL_DIR/install/bin -type f -exec sed -i 's/\/nix\/store\/hrpvwkjz04s9i4nmli843hyw9z4pwhww-bash-4.4-p23//g' {} \;
+        - wget https://anaconda.org/SymbiFlow/prjxray-tools/0.1_2646_gec6f9c51/download/linux-64/prjxray-tools-0.1_2646_gec6f9c51-20200723_171057.tar.bz2 > /dev/null
+        - tar -xf prjxray-tools-0.1_2646_gec6f9c51-20200723_171057.tar.bz2
+        - cp bin/xc7frames2bit $INSTALL_DIR/install/bin/xc7frames2bit
         - export PATH="$INSTALL_DIR/install/bin:$PATH"
 
         - wget https://raw.githubusercontent.com/lowRISC/opentitan/master/util/get-toolchain.py
@@ -34,9 +40,6 @@ script:
         - cd yosys-symbiflow-plugins && make -j$(nproc) install && cd ..
         - export ROOT_DIR=${PWD}
         - export IBEX_BUILD_DIR="${ROOT_DIR}/ibex/build"
-        - export XRAY_FASM2FRAMES="$ROOT_DIR/prjxray/utils/fasm2frames.py"
-        - export XRAY_DATABASE_DIR="/opt/symbiflow/xc7/conda/envs/xc7/share/symbiflow/prjxray-db"
-        - export XRAY_TOOLS_DIR="/opt/symbiflow/xc7/conda/envs/xc7/bin/"
 
         - make ibex/configure
         - make patch/symbiflow
