@@ -42,7 +42,7 @@ cd ibex
 git apply ../ibex.patch
 pip install -r python-requirements.txt
 make sw-led
-fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part xc7a35ticsg324-1L
+fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part xc7a200tsbg484-1L
 cd ..
 make ibex/configure
 make patch/symbiflow

@@ -32,7 +32,7 @@ install:
         - pip3 install wheel
         - pip3 install -r $(pwd)/ibex/python-requirements.txt
 
-        - cd ibex && git apply ../ibex.patch && make sw-led && fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part xc7a35ticsg324-1L --SRAMInitFile=$(pwd)/examples/sw/led/led.vmem && cd ..
+        - cd ibex && git apply ../ibex.patch && make sw-led && fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part xc7a200tsbg484-1L --SRAMInitFile=$(pwd)/examples/sw/led/led.vmem && cd ..
         - conda deactivate
 script:
         - conda activate xc7
