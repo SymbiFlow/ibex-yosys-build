@@ -9,36 +9,17 @@ install:
         - sudo apt-get update
         - sudo apt-get install git build-essential srecord unzip wget tree python3-pip python3-setuptools python3-wheel clang bison flex libreadline-dev gawk tcl-dev libffi-dev git graphviz xdot pkg-config python3 libboost-system-dev libboost-python-dev libboost-filesystem-dev zlib1g-dev
 
-        - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O conda_installer.sh
-        - export INSTALL_DIR="/opt/symbiflow/xc7"
-        - bash conda_installer.sh -b -p $INSTALL_DIR/conda && rm conda_installer.sh
-        - source "$INSTALL_DIR/conda/etc/profile.d/conda.sh"
-        - conda env create -f environment.yml
-        - conda activate xc7
-
-        - wget -qO- https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/continuous/install/27/20200630-100111/symbiflow-arch-defs-install-30f7325f.tar.xz | tar -xJ -C $INSTALL_DIR
-        - export PATH="$INSTALL_DIR/install/bin:$PATH"
-
         - wget https://raw.githubusercontent.com/lowRISC/opentitan/master/util/get-toolchain.py
         - python3 get-toolchain.py -t ${PWD}/riscv/
-        - export PATH="$PATH:${PWD}/riscv/bin"
-
-        - pip3 install wheel
-        - pip3 install -r $(pwd)/ibex/python-requirements.txt
-
-        - cd ibex && git apply ../ibex.patch && make sw-led && fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part xc7a35ticsg324-1L --SRAMInitFile=$(pwd)/examples/sw/led/led.vmem && cd ..
-        - conda deactivate
+        - export PATH="$PATH:${PWD}/riscv/bin:${PWD}/env/symbiflow/bin"
 script:
-        - conda activate xc7
-        - cd yosys && make install -j$(nproc) PREFIX=$INSTALL_DIR/conda/envs/xc7 && cd ..
-        - cd yosys-symbiflow-plugins && make -j$(nproc) install && cd ..
         - export ROOT_DIR=${PWD}
         - export IBEX_BUILD_DIR="${ROOT_DIR}/ibex/build"
-        - export XRAY_FASM2FRAMES="$ROOT_DIR/prjxray/utils/fasm2frames.py"
-        - export XRAY_DATABASE_DIR="/opt/symbiflow/xc7/conda/envs/xc7/share/symbiflow/prjxray-db"
-        - export XRAY_TOOLS_DIR="/opt/symbiflow/xc7/conda/envs/xc7/bin/"
 
+        - make env
+
+        - cd yosys && make install -j$(nproc) PREFIX=${ROOT_DIR}/env/conda/envs/xc7 && cd ..
+
+        - make yosys/plugins
         - make ibex/configure
-        - make patch/symbiflow
-        - make
-        - conda deactivate
+        - make all

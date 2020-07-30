@@ -30,36 +30,61 @@ SDC := ${current_dir}/arty.sdc
 XDC := ${current_dir}/arty.xdc
 BUILDDIR := build
 
-all: ${BUILDDIR}/${TOP}.bit
+SYMBIFLOW_ARCHIVE = symbiflow.tar.xz
+SYMBIFLOW_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/continuous/install/44/20200721-072851/symbiflow-arch-defs-install-206bd565.tar.xz"
+
+TOP_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+REQUIREMENTS_FILE := requirements.txt
+ENVIRONMENT_FILE := environment.yml
+
+third_party/make-env/conda.mk:
+	git submodule init
+	git submodule update --init --recursive
+
+include third_party/make-env/conda.mk
+
+env:: | $(CONDA_ENV_PYTHON)
+	git submodule init
+	git submodule update --init --recursive
+	mkdir -p env/symbiflow
+	wget -O ${SYMBIFLOW_ARCHIVE} ${SYMBIFLOW_URL}
+	tar -xf ${SYMBIFLOW_ARCHIVE} -C env/symbiflow
+	rm ${SYMBIFLOW_ARCHIVE}
+
+all: patch/symbiflow ${BUILDDIR}/${TOP}.bit
 
 ibex/configure:
+	$(IN_CONDA_ENV) pip install -r ibex/python-requirements.txt
+	cd ibex && git apply ../ibex.patch && make sw-led && $(IN_CONDA_ENV) fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part $(PARTNAME)L --SRAMInitFile=$(pwd)/examples/sw/led/led.vmem && cd ..
 	cp prim_generic_clock_gating.sv ibex/build/lowrisc_ibex_top_artya7_0.1/src/lowrisc_prim_generic_clock_gating_0/rtl/prim_generic_clock_gating.sv
 
 patch/symbiflow:
-	cp synth /opt/symbiflow/xc7/install/bin/synth
-	cp synth.tcl /opt/symbiflow/xc7/install/share/symbiflow/scripts/xc7/synth.tcl
+	$(IN_CONDA_ENV) cp symbiflow_synth $(shell which symbiflow_synth)
+
+yosys/plugins:
+	cd yosys-symbiflow-plugins && $(IN_CONDA_ENV) make -j$(nproc) install && cd ..
 
 ${BUILDDIR}:
 	mkdir ${BUILDDIR}
 
 ${BUILDDIR}/${TOP}.eblif: | ${BUILDDIR}
-	cd ${BUILDDIR} && synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} -p ${PARTNAME} -i ${IBEX_INCLUDE} -x ${XDC} -l ${current_dir}/ibex/examples/sw/led/led.vmem > /dev/null
+	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} -p ${PARTNAME} -i ${IBEX_INCLUDE} -x ${XDC} -l ${current_dir}/ibex/examples/sw/led/led.vmem > /dev/null
 
 ${BUILDDIR}/${TOP}.net: ${BUILDDIR}/${TOP}.eblif
-	cd ${BUILDDIR} && pack -e ${TOP}.eblif -d ${DEVICE} -s ${SDC} > /dev/null
+	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_pack -e ${TOP}.eblif -d ${DEVICE} -s ${SDC} > /dev/null
 
 ${BUILDDIR}/${TOP}.place: ${BUILDDIR}/${TOP}.net
-	cd ${BUILDDIR} && place -e ${TOP}.eblif -d ${DEVICE} -p ${PCF} -n ${TOP}.net -P ${PARTNAME} -s ${SDC} > /dev/null
+	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_place -e ${TOP}.eblif -d ${DEVICE} -p ${PCF} -n ${TOP}.net -P ${PARTNAME} -s ${SDC} > /dev/null
 
 ${BUILDDIR}/${TOP}.route: ${BUILDDIR}/${TOP}.place
-	cd ${BUILDDIR} && route -e ${TOP}.eblif -d ${DEVICE} -s ${SDC} > /dev/null
+	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_route -e ${TOP}.eblif -d ${DEVICE} -s ${SDC} > /dev/null
 
 ${BUILDDIR}/${TOP}.fasm: ${BUILDDIR}/${TOP}.route
-	cd ${BUILDDIR} && write_fasm -e ${TOP}.eblif -d ${DEVICE} > /dev/null
+	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_write_fasm -e ${TOP}.eblif -d ${DEVICE} > /dev/null
 
 ${BUILDDIR}/${TOP}.bit: ${BUILDDIR}/${TOP}.fasm
-	cd ${BUILDDIR} && write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm -p ${PARTNAME} -b ${TOP}.bit
+	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_write_bitstream -d ${BITSTREAM_DEVICE} -f ${TOP}.fasm -p ${PARTNAME} -b ${TOP}.bit
 
-clean:
+clean::
 	rm -rf ${BUILDDIR}
 

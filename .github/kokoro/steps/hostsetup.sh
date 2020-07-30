@@ -51,6 +51,7 @@ sudo apt-get install -y \
         bison \
         build-essential \
         ca-certificates \
+        clang \
         clang-format \
         cmake \
         colordiff \
@@ -59,7 +60,12 @@ sudo apt-get install -y \
         flex \
         fontconfig \
         git \
+        graphviz \
         jq \
+        libboost-system-dev \
+        libboost-python-dev \
+        libboost-filesystem-dev \
+        libffi-dev \
         nodejs \
         psmisc \
         python \
@@ -67,7 +73,13 @@ sudo apt-get install -y \
         python3-dev \
         python3-virtualenv \
         python3-yaml \
+        srecord \
+        tcl-dev \
+        unzip \
         virtualenv \
+        wget \
+        xdot \
+        zlib1g-dev \
 
 echo "----------------------------------------"
 
@@ -88,4 +100,45 @@ echo "Getting diff2html to produce pretty database diffs"
 echo "----------------------------------------"
 (
 	sudo npm install -g diff2html-cli
+)
+
+echo "----------------------------------------"
+
+echo
+echo "========================================"
+echo "Setting up conda environment"
+echo "----------------------------------------"
+(
+	echo
+	echo " Configuring conda environment"
+	echo "----------------------------------------"
+	make env
+	echo "----------------------------------------"
+)
+
+echo "----------------------------------------"
+
+echo
+echo "========================================"
+echo "Install riscv-toolchain"
+echo "----------------------------------------"
+(
+	echo
+	echo "----------------------------------------"
+	wget https://raw.githubusercontent.com/lowRISC/opentitan/master/util/get-toolchain.py
+	python3 get-toolchain.py -t ${PWD}/riscv/
+	echo "----------------------------------------"
+)
+
+echo
+echo "========================================"
+echo "Install yosys"
+echo "----------------------------------------"
+(
+	echo
+	echo "----------------------------------------"
+	export ROOT_DIR=${PWD}
+	cd yosys && make install -j$(nproc) PREFIX=${ROOT_DIR}/env/conda/envs/xc7 && cd ..
+	make yosys/plugins
+	echo "----------------------------------------"
 )
