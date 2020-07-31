@@ -11,11 +11,11 @@ set -e
 
 cd github/$KOKORO_DIR/
 
-source ./.github/kokoro/steps/hostsetup.sh
-source ./.github/kokoro/steps/hostinfo.sh
-source ./.github/kokoro/steps/git.sh
+source ./kokoro/steps/hostsetup.sh
+source ./kokoro/steps/hostinfo.sh
+source ./kokoro/steps/git.sh
 
-source ./.github/kokoro/steps/riscv-env.sh
+source ./kokoro/steps/riscv-env.sh
 
 echo
 echo "========================================"
