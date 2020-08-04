@@ -15,6 +15,9 @@ source ./kokoro/steps/hostsetup.sh
 source ./kokoro/steps/hostinfo.sh
 source ./kokoro/steps/git.sh
 
+source ./kokoro/steps/hostsetup-a200t.sh
+source ./kokoro/steps/download-a200t-arch-defs.sh
+
 source ./kokoro/steps/riscv-env.sh
 
 echo
@@ -23,7 +26,7 @@ echo "Running tests"
 echo "----------------------------------------"
 (
 	make ibex/configure
-	make all PARTNAME=$(PARTNAME) DEVICE=$(DEVICE)
+	make all PARTNAME=xc7a200tsbg484-1 DEVICE=xc7a200t_test PCF=${PWD}/a200t/a200t-arty.pcf SDC=${PWD}/a200t/a200t-arty.sdc XDC=${PWD}/a200t/a200t-arty.xdc
 )
 echo "----------------------------------------"
 

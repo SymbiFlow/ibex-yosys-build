@@ -23,7 +23,7 @@ echo "Running tests"
 echo "----------------------------------------"
 (
 	make ibex/configure
-	make all PARTNAME=$(PARTNAME) DEVICE=$(DEVICE)
+	make all PARTNAME=xc7a35tcsg324-1 DEVICE=xc7a50t_test
 )
 echo "----------------------------------------"
 
