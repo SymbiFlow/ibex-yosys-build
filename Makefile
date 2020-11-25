@@ -31,7 +31,7 @@ XDC := ${current_dir}/arty.xdc
 BUILDDIR := build
 
 SYMBIFLOW_ARCHIVE = symbiflow.tar.xz
-SYMBIFLOW_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/continuous/install/44/20200721-072851/symbiflow-arch-defs-install-206bd565.tar.xz"
+SYMBIFLOW_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/continuous/install/99/20201124-101431/symbiflow-arch-defs-install-8c499dc5.tar.xz"
 
 TOP_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 REQUIREMENTS_FILE := requirements.txt
@@ -55,11 +55,12 @@ all: patch/symbiflow ${BUILDDIR}/${TOP}.bit
 
 ibex/configure:
 	$(IN_CONDA_ENV) pip install -r ibex/python-requirements.txt
-	cd ibex && git apply ../ibex.patch && make sw-led && $(IN_CONDA_ENV) fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part $(PARTNAME)L --SRAMInitFile=$(pwd)/examples/sw/led/led.vmem && cd ..
+	cd ibex && git apply ../ibex.patch && make sw-led && $(IN_CONDA_ENV) fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part $(PARTNAME)L --SRAMInitFile=$(current_dir)/examples/sw/led/led.vmem && cd ..
 	cp prim_generic_clock_gating.sv ibex/build/lowrisc_ibex_top_artya7_0.1/src/lowrisc_prim_generic_clock_gating_0/rtl/prim_generic_clock_gating.sv
 
 patch/symbiflow:
 	$(IN_CONDA_ENV) cp symbiflow_synth $(shell which symbiflow_synth)
+	cp synth.tcl $(current_dir)/env/symbiflow/share/symbiflow/scripts/xc7/synth.tcl
 
 yosys/plugins:
 	cd yosys-symbiflow-plugins && $(IN_CONDA_ENV) make -j$(nproc) install && cd ..
