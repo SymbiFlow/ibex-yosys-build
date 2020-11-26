@@ -30,8 +30,8 @@ SDC := ${current_dir}/arty.sdc
 XDC := ${current_dir}/arty.xdc
 BUILDDIR := build
 
-SYMBIFLOW_ARCHIVE = symbiflow.tar.xz
-SYMBIFLOW_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/continuous/install/99/20201124-101431/symbiflow-arch-defs-install-8c499dc5.tar.xz"
+SYMBIFLOW_TOOLS_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-arch-defs-install-05bd35c7.tar.xz"
+SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-xc7a50t_test.tar.xz"
 
 TOP_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 REQUIREMENTS_FILE := requirements.txt
@@ -47,9 +47,9 @@ env:: | $(CONDA_ENV_PYTHON)
 	git submodule init
 	git submodule update --init --recursive
 	mkdir -p env/symbiflow
-	wget -O ${SYMBIFLOW_ARCHIVE} ${SYMBIFLOW_URL}
-	tar -xf ${SYMBIFLOW_ARCHIVE} -C env/symbiflow
-	rm ${SYMBIFLOW_ARCHIVE}
+	mkdir -p env/symbiflow/share/symbiflow/arch
+	wget -qO- ${SYMBIFLOW_TOOLS_URL} | tar -xJC env/symbiflow
+	wget -qO- ${SYMBIFLOW_ARCH_URL} | tar -xJC env/symbiflow/share/symbiflow/arch
 
 all: patch/symbiflow ${BUILDDIR}/${TOP}.bit
 
