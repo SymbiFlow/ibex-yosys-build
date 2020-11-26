@@ -15,7 +15,44 @@ source ./kokoro/steps/hostsetup.sh
 source ./kokoro/steps/hostinfo.sh
 source ./kokoro/steps/git.sh
 
+echo
+echo "========================================"
+echo "Install riscv-toolchain"
+echo "----------------------------------------"
+(
+	echo
+	echo "----------------------------------------"
+	make toolchain
+	echo "----------------------------------------"
+)
+
+echo
+echo "========================================"
+echo "Setting up conda environment"
+echo "----------------------------------------"
+(
+	echo
+	echo " Configuring conda environment"
+	echo "----------------------------------------"
+	make env DEVICE=xc7a100t_test
+	echo "----------------------------------------"
+)
+
 source ./kokoro/steps/riscv-env.sh
+
+echo "----------------------------------------"
+
+echo
+echo "========================================"
+echo "Install yosys"
+echo "----------------------------------------"
+(
+	echo
+	echo "----------------------------------------"
+	make yosys/build
+	make yosys/plugins
+	echo "----------------------------------------"
+)
 
 echo
 echo "========================================"

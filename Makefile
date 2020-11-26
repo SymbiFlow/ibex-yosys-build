@@ -31,7 +31,14 @@ XDC := ${current_dir}/arty.xdc
 BUILDDIR := build
 
 SYMBIFLOW_TOOLS_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-arch-defs-install-05bd35c7.tar.xz"
+ifeq ("$(DEVICE)","xc7a50t_test")
 SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-xc7a50t_test.tar.xz"
+else ifeq ("$(DEVICE)","xc7a100t_test")
+SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-xc7a100t_test.tar.xz"
+else ifeq ("$(DEVICE)","xc7a200t_test")
+SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-xc7a200t_test.tar.xz"
+endif
+
 
 TOP_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 REQUIREMENTS_FILE := requirements.txt
@@ -63,13 +70,20 @@ patch/symbiflow:
 	cp synth.tcl $(current_dir)/env/symbiflow/share/symbiflow/scripts/xc7/synth.tcl
 
 yosys/plugins:
-	cd yosys-symbiflow-plugins && $(IN_CONDA_ENV) make -j$(nproc) install && cd ..
+	cd yosys-symbiflow-plugins && $(IN_CONDA_ENV) $(MAKE) install && cd ..
+
+yosys/build:
+	cd yosys && $(MAKE) install PREFIX=$(current_dir)/env/conda/envs/xc7 && cd ..
+
+toolchain:
+	wget https://raw.githubusercontent.com/lowRISC/opentitan/master/util/get-toolchain.py
+	python3 get-toolchain.py --install-dir $(current_dir)/riscv/
 
 ${BUILDDIR}:
 	mkdir ${BUILDDIR}
 
 ${BUILDDIR}/${TOP}.eblif: | ${BUILDDIR}
-	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} -p ${PARTNAME} -i ${IBEX_INCLUDE} -x ${XDC} -l ${current_dir}/ibex/examples/sw/led/led.vmem > /dev/null
+	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} -p ${PARTNAME} -i ${IBEX_INCLUDE} -x ${XDC} -l ${current_dir}/ibex/examples/sw/led/led.vmem
 
 ${BUILDDIR}/${TOP}.net: ${BUILDDIR}/${TOP}.eblif
 	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_pack -e ${TOP}.eblif -d ${DEVICE} -s ${SDC} > /dev/null

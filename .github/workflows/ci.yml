@@ -17,18 +17,16 @@ jobs:
 
     - name: Download & install lowRISC toolchain
       run: |
-        wget https://raw.githubusercontent.com/lowRISC/opentitan/master/util/get-toolchain.py
-        python3 get-toolchain.py --install-dir ${PWD}/riscv/
+        make toolchain
 
     - name: Download conda environment
       run: |
         make env
 
     - name: Build & install yosys
-      run: cd yosys && make install -j$(nproc) PREFIX=${PWD}/../env/conda/envs/xc7 && cd ..
-
-    - name: Update Symbiflow yosys plugins
-      run: make yosys/plugins
+      run: |
+        make yosys/build
+        make yosys/plugins
 
     - name: Export PATH
       run: |
