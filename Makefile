@@ -30,13 +30,13 @@ SDC := ${current_dir}/arty.sdc
 XDC := ${current_dir}/arty.xdc
 BUILDDIR := build
 
-SYMBIFLOW_TOOLS_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-arch-defs-install-05bd35c7.tar.xz"
+SYMBIFLOW_TOOLS_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1077/20201126-021625/symbiflow-arch-defs-install-c5272455.tar.xz"
 ifeq ("$(DEVICE)","xc7a50t_test")
-SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-xc7a50t_test.tar.xz"
+SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1077/20201126-021625/symbiflow-xc7a50t_test.tar.xz"
 else ifeq ("$(DEVICE)","xc7a100t_test")
-SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-xc7a100t_test.tar.xz"
+SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1077/20201126-021625/symbiflow-xc7a100t_test.tar.xz"
 else ifeq ("$(DEVICE)","xc7a200t_test")
-SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-xc7a200t_test.tar.xz"
+SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1077/20201126-021625/symbiflow-xc7a200t_test.tar.xz"
 endif
 
 
@@ -51,12 +51,9 @@ third_party/make-env/conda.mk:
 include third_party/make-env/conda.mk
 
 env:: | $(CONDA_ENV_PYTHON)
-	git submodule init
-	git submodule update --init --recursive
 	mkdir -p env/symbiflow
-	mkdir -p env/symbiflow/share/symbiflow/arch
 	wget -qO- ${SYMBIFLOW_TOOLS_URL} | tar -xJC env/symbiflow
-	wget -qO- ${SYMBIFLOW_ARCH_URL} | tar -xJC env/symbiflow/share/symbiflow/arch
+	wget -qO- ${SYMBIFLOW_ARCH_URL} | tar -xJC env/symbiflow
 
 all: patch/symbiflow ${BUILDDIR}/${TOP}.bit
 
