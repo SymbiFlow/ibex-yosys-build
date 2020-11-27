@@ -107,29 +107,30 @@ echo "----------------------------------------"
 
 echo
 echo "========================================"
+echo "Install riscv-toolchain"
+echo "----------------------------------------"
+(
+	echo
+	echo "----------------------------------------"
+	make toolchain
+	echo "----------------------------------------"
+)
+
+echo
+echo "========================================"
 echo "Setting up conda environment"
 echo "----------------------------------------"
 (
 	echo
 	echo " Configuring conda environment"
 	echo "----------------------------------------"
-	make env
+	make env DEVICE=${DEVICE}
 	echo "----------------------------------------"
 )
 
-echo "----------------------------------------"
+source ./kokoro/steps/riscv-env.sh
 
-echo
-echo "========================================"
-echo "Install riscv-toolchain"
 echo "----------------------------------------"
-(
-	echo
-	echo "----------------------------------------"
-	wget https://raw.githubusercontent.com/lowRISC/opentitan/master/util/get-toolchain.py
-	python3 get-toolchain.py -t ${PWD}/riscv/
-	echo "----------------------------------------"
-)
 
 echo
 echo "========================================"
@@ -138,8 +139,7 @@ echo "----------------------------------------"
 (
 	echo
 	echo "----------------------------------------"
-	export ROOT_DIR=${PWD}
-	cd yosys && make install -j$(nproc) PREFIX=${ROOT_DIR}/env/conda/envs/xc7 && cd ..
+	make yosys/build
 	make yosys/plugins
 	echo "----------------------------------------"
 )

@@ -11,27 +11,14 @@ set -e
 
 cd github/$KOKORO_DIR/
 
+export DEVICE=xc7a100t_test
+export PARTNAME=xc7a100tcsg324-1
+export XDC=${PWD}/arty.xdc
+export SDC=${PWD}/arty.sdc
+export PCF=${PWD}/arty.pcf
+
 source ./kokoro/steps/hostsetup.sh
 source ./kokoro/steps/hostinfo.sh
 source ./kokoro/steps/git.sh
 
-source ./kokoro/steps/riscv-env.sh
-
-echo
-echo "========================================"
-echo "Running tests"
-echo "----------------------------------------"
-(
-	make ibex/configure
-	make all PARTNAME=xc7a100tcsg324-1 DEVICE=xc7a100t_test
-)
-echo "----------------------------------------"
-
-# TODO
-#echo
-#echo "========================================"
-#echo "Copying tests logs"
-#echo "----------------------------------------"
-#(
-#)
-#echo "----------------------------------------"
+source ./kokoro/steps/run_tests.sh

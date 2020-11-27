@@ -30,8 +30,15 @@ SDC := ${current_dir}/arty.sdc
 XDC := ${current_dir}/arty.xdc
 BUILDDIR := build
 
-SYMBIFLOW_ARCHIVE = symbiflow.tar.xz
-SYMBIFLOW_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/continuous/install/44/20200721-072851/symbiflow-arch-defs-install-206bd565.tar.xz"
+SYMBIFLOW_TOOLS_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-arch-defs-install-05bd35c7.tar.xz"
+ifeq ("$(DEVICE)","xc7a50t_test")
+SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-xc7a50t_test.tar.xz"
+else ifeq ("$(DEVICE)","xc7a100t_test")
+SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-xc7a100t_test.tar.xz"
+else ifeq ("$(DEVICE)","xc7a200t_test")
+SYMBIFLOW_ARCH_URL = "https://storage.googleapis.com/symbiflow-arch-defs/artifacts/prod/foss-fpga-tools/symbiflow-arch-defs/presubmit/install/1049/20201123-030526/symbiflow-xc7a200t_test.tar.xz"
+endif
+
 
 TOP_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 REQUIREMENTS_FILE := requirements.txt
@@ -47,28 +54,36 @@ env:: | $(CONDA_ENV_PYTHON)
 	git submodule init
 	git submodule update --init --recursive
 	mkdir -p env/symbiflow
-	wget -O ${SYMBIFLOW_ARCHIVE} ${SYMBIFLOW_URL}
-	tar -xf ${SYMBIFLOW_ARCHIVE} -C env/symbiflow
-	rm ${SYMBIFLOW_ARCHIVE}
+	mkdir -p env/symbiflow/share/symbiflow/arch
+	wget -qO- ${SYMBIFLOW_TOOLS_URL} | tar -xJC env/symbiflow
+	wget -qO- ${SYMBIFLOW_ARCH_URL} | tar -xJC env/symbiflow/share/symbiflow/arch
 
 all: patch/symbiflow ${BUILDDIR}/${TOP}.bit
 
 ibex/configure:
 	$(IN_CONDA_ENV) pip install -r ibex/python-requirements.txt
-	cd ibex && git apply ../ibex.patch && make sw-led && $(IN_CONDA_ENV) fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part $(PARTNAME)L --SRAMInitFile=$(pwd)/examples/sw/led/led.vmem && cd ..
+	cd ibex && git apply ../ibex.patch && make sw-led && $(IN_CONDA_ENV) fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part $(PARTNAME)L --SRAMInitFile=$(current_dir)/examples/sw/led/led.vmem && cd ..
 	cp prim_generic_clock_gating.sv ibex/build/lowrisc_ibex_top_artya7_0.1/src/lowrisc_prim_generic_clock_gating_0/rtl/prim_generic_clock_gating.sv
 
 patch/symbiflow:
 	$(IN_CONDA_ENV) cp symbiflow_synth $(shell which symbiflow_synth)
+	cp synth.tcl $(current_dir)/env/symbiflow/share/symbiflow/scripts/xc7/synth.tcl
 
 yosys/plugins:
-	cd yosys-symbiflow-plugins && $(IN_CONDA_ENV) make -j$(nproc) install && cd ..
+	cd yosys-symbiflow-plugins && $(IN_CONDA_ENV) $(MAKE) install && cd ..
+
+yosys/build:
+	cd yosys && $(MAKE) install PREFIX=$(current_dir)/env/conda/envs/xc7 && cd ..
+
+toolchain:
+	wget https://raw.githubusercontent.com/lowRISC/opentitan/master/util/get-toolchain.py
+	python3 get-toolchain.py --install-dir $(current_dir)/riscv/
 
 ${BUILDDIR}:
 	mkdir ${BUILDDIR}
 
 ${BUILDDIR}/${TOP}.eblif: | ${BUILDDIR}
-	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} -p ${PARTNAME} -i ${IBEX_INCLUDE} -x ${XDC} -l ${current_dir}/ibex/examples/sw/led/led.vmem > /dev/null
+	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_synth -t ${TOP} -v ${VERILOG} -d ${BITSTREAM_DEVICE} -p ${PARTNAME} -i ${IBEX_INCLUDE} -x ${XDC} -l ${current_dir}/ibex/examples/sw/led/led.vmem
 
 ${BUILDDIR}/${TOP}.net: ${BUILDDIR}/${TOP}.eblif
 	cd ${BUILDDIR} && $(IN_CONDA_ENV) symbiflow_pack -e ${TOP}.eblif -d ${DEVICE} -s ${SDC} > /dev/null
