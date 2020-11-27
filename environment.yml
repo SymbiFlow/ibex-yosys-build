@@ -3,7 +3,7 @@ channels:
   - symbiflow
 dependencies:
   - symbiflow::symbiflow-vtr=8.0.0.rc2_5415_gd6d69ff92=20201120_180018
-  - symbiflow::prjxray-db
+  - symbiflow::prjxray-db=0.0_0239_gd87c844
   - symbiflow::prjxray-tools
   - make
   - lxml
