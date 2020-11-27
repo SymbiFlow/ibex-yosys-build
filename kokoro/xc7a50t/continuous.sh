@@ -11,64 +11,14 @@ set -e
 
 cd github/$KOKORO_DIR/
 
+export DEVICE=xc7a50t_test
+export PARTNAME=xc7a35tcsg324-1
+export XDC=${PWD}/arty.xdc
+export SDC=${PWD}/arty.sdc
+export PCF=${PWD}/arty.pcf
+
 source ./kokoro/steps/hostsetup.sh
 source ./kokoro/steps/hostinfo.sh
 source ./kokoro/steps/git.sh
 
-echo
-echo "========================================"
-echo "Install riscv-toolchain"
-echo "----------------------------------------"
-(
-	echo
-	echo "----------------------------------------"
-	make toolchain
-	echo "----------------------------------------"
-)
-
-echo
-echo "========================================"
-echo "Setting up conda environment"
-echo "----------------------------------------"
-(
-	echo
-	echo " Configuring conda environment"
-	echo "----------------------------------------"
-	make env DEVICE=xc7a50t_test
-	echo "----------------------------------------"
-)
-
-source ./kokoro/steps/riscv-env.sh
-
-echo "----------------------------------------"
-
-echo
-echo "========================================"
-echo "Install yosys"
-echo "----------------------------------------"
-(
-	echo
-	echo "----------------------------------------"
-	make yosys/build
-	make yosys/plugins
-	echo "----------------------------------------"
-)
-
-echo
-echo "========================================"
-echo "Running tests"
-echo "----------------------------------------"
-(
-	make ibex/configure
-	make all PARTNAME=xc7a35tcsg324-1 DEVICE=xc7a50t_test
-)
-echo "----------------------------------------"
-
-# TODO
-#echo
-#echo "========================================"
-#echo "Copying tests logs"
-#echo "----------------------------------------"
-#(
-#)
-#echo "----------------------------------------"
+source ./kokoro/steps/run_tests.sh
