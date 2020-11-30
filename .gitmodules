@@ -1,7 +1,7 @@
 [submodule "yosys"]
 	path = yosys
 	url = https://github.com/antmicro/yosys
-	branch = ibex-wip
+	branch = ibex-wip-rebase
 [submodule "ibex"]
 	path = ibex
 	url = https://github.com/lowRISC/ibex/
