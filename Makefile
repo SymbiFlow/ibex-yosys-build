@@ -60,7 +60,6 @@ all: patch/symbiflow ${BUILDDIR}/${TOP}.bit
 ibex/configure:
 	$(IN_CONDA_ENV) pip install -r ibex/python-requirements.txt
 	cd ibex && git apply ../ibex.patch && make sw-led && $(IN_CONDA_ENV) fusesoc --cores-root=. run --target=synth --setup lowrisc:ibex:top_artya7 --part $(PARTNAME)L --SRAMInitFile=$(current_dir)/examples/sw/led/led.vmem && cd ..
-	cp prim_generic_clock_gating.sv ibex/build/lowrisc_ibex_top_artya7_0.1/src/lowrisc_prim_generic_clock_gating_0/rtl/prim_generic_clock_gating.sv
 
 patch/symbiflow:
 	$(IN_CONDA_ENV) cp symbiflow_synth $(shell which symbiflow_synth)
