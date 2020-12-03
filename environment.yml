@@ -9,6 +9,7 @@ dependencies:
   - git
   - gxx_linux-64
   # Packages installed from PyPI
+  - python=3.8
   - pip
   - pip:
     - -r file:requirements.txt
