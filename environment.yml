@@ -6,12 +6,9 @@ dependencies:
   - symbiflow::prjxray-db=0.0_0239_gd87c844
   - symbiflow::prjxray-tools
   - make
-  - lxml
-  - simplejson
-  - intervaltree
   - git
-  - pip
   - gxx_linux-64
   # Packages installed from PyPI
+  - pip
   - pip:
     - -r file:requirements.txt
