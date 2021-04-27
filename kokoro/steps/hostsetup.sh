@@ -79,8 +79,9 @@ sudo apt-get install -y \
         virtualenv \
         wget \
         xdot \
-	xzdec \
+        xzdec \
         zlib1g-dev \
+        libtbb-dev \
 
 echo "----------------------------------------"
 
